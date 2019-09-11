@@ -222,7 +222,7 @@ def check_ping(nodes):
     except NameError:
         unreachable = []
     for node in nodes:
-        unit_id = node[0].split('/')[1]
+        unit_id = int(node[0].split('/')[1])
         hookenv.log('Pinging unit_id: ' + str(unit_id), 'INFO')
         if ping(node[1], ping_time, ping_tries) == 1:
             hookenv.log('Ping FAILED for unit_id: ' + str(unit_id), 'ERROR')
@@ -233,7 +233,7 @@ def check_ping(nodes):
             if unit_id in unreachable:
                 unreachable.remove(unit_id)
 
-    return unreachable
+    return sorted(unreachable)
 
 
 def check_dns(nodes):
