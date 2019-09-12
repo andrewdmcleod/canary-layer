@@ -1,3 +1,9 @@
+This repo is deprecated - please use
+
+https://github.com/openstack-charmers/magpie-layer/
+
+
+
 # Overview
 
 Magpie is a charm used for testing the networking of a juju provider/substrate.
