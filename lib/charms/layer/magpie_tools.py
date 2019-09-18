@@ -88,11 +88,11 @@ def check_local_hostname():
 
 def check_local_mtu(required_mtu, iface_mtu):
     if required_mtu == 0:
-        return 0 
+        return 0
     elif 0 <= (int(iface_mtu) - int(required_mtu)) <= 12:
-        return 100 
+        return 100
     else:
-        return 200 
+        return 200
 
 
 def check_min_speed(min_speed, iperf_speed):
@@ -118,9 +118,9 @@ def check_nodes(nodes, iperf_client=False):
     min_speed = cfg.get('min_speed')
     msg = "MTU for iface: {} is {}".format(primary_iface, iface_mtu)
     hookenv.log(msg, 'INFO')
-    #if required_mtu != 0 and not 0 <= (int(iface_mtu) - int(required_mtu)) <= 12:
+    # if required_mtu != 0 and not 0 <= (int(iface_mtu) - int(required_mtu)) <= 12:
     #    iperf_status = ", local mtu check failed, required_mtu: {}, iface mtu: {}".format(required_mtu, iface_mtu)
-    #elif required_mtu == 0 or 0 <= (int(iface_mtu) - int(required_mtu)) <= 12:
+    # elif required_mtu == 0 or 0 <= (int(iface_mtu) - int(required_mtu)) <= 12:
     if not iperf_client:
         iperf = Iperf()
         mtu = iperf.mtu()
@@ -135,12 +135,15 @@ def check_nodes(nodes, iperf_client=False):
         else:
             iperf_status = ", network mtu check failed"
         if "failed" not in speed:
-            if check_min_speed(min_speed, int(speed)) == 0:
+            if check_min_speed(min_speed, float(speed)) == 0:
                 iperf_status = iperf_status + ", {} mbit/s".format(speed)
-            if check_min_speed(min_speed, int(speed)) == 100:
-                iperf_status = iperf_status + ", speed ok: {} mbit/s".format(speed)
-            if check_min_speed(min_speed, int(speed)) == 200:
-                iperf_status = iperf_status + ", speed failed: {} < {} mbit/s".format(speed, str(min_speed))
+            if check_min_speed(min_speed, float(speed)) == 100:
+                iperf_status = iperf_status + \
+                    ", speed ok: {} mbit/s".format(speed)
+            if check_min_speed(min_speed, float(speed)) == 200:
+                iperf_status = iperf_status + \
+                    ", speed failed: {} < {} mbit/s".format(
+                        speed, str(min_speed))
         else:
             iperf_status = iperf_status + ", iperf speed check failed"
     elif iperf_client:
@@ -148,9 +151,12 @@ def check_nodes(nodes, iperf_client=False):
         iperf = Iperf()
         iperf.hostcheck(nodes)
     if check_local_mtu(required_mtu, iface_mtu) == 100:
-        iperf_status = iperf_status + ", local mtu ok, required: {}".format(required_mtu)
+        iperf_status = iperf_status + \
+            ", local mtu ok, required: {}".format(required_mtu)
     elif check_local_mtu(required_mtu, iface_mtu) == 200:
-        iperf_status = iperf_status + ", local mtu failed, required: {}, iface: {}".format(required_mtu, iface_mtu)
+        iperf_status = iperf_status + \
+            ", local mtu failed, required: {}, iface: {}".format(
+                required_mtu, iface_mtu)
     hookenv.log('doing other things after iperf', 'INFO')
     cfg_check_local_hostname = cfg.get('check_local_hostname')
     if cfg_check_local_hostname:
